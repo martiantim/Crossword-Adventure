@@ -1,0 +1,37 @@
+  <% javascript_tag do %>
+    function hideInstructions() {
+      $('instructions').style.display = 'none';
+      $('show_instructions').style.display = 'block';
+  
+      var params = 'challenge_id=' + challengeID;
+      if (sessionID) { params += "&s_id=" + sessionID; }
+    
+      new Ajax.Updater('puzzle_data', '/account/hide_instructions?' + params, {asynchronous:true, evalScripts:true});        
+    }
+    function showInstructions() {
+      $('instructions').style.display = 'block';
+      $('show_instructions').style.display = 'none';      
+  
+      var params = 'challenge_id=' + challengeID;
+      if (sessionID) { params += "&s_id=" + sessionID; }
+  
+      new Ajax.Updater('puzzle_data', '/account/show_instructions?' + params, {asynchronous:true, evalScripts:true});        
+    }
+  <% end %>
+
+  <div id="instructions" style="<%= "display:none;" if !@me.show_instructions %>">
+    <div class="field_box_title" style="width:100px">Instructions</div>
+    <div class="field_box" style="padding-bottom: 0px">
+      <ul>
+        <li>Use the arrow keys or mouse to move around the puzzle.</li>
+        <li>TAB to switch between Across and Down clues.</li>
+        <li>DELETE, BACKSPACE, or SPACE to delete a letter</li>
+        <li>Click the Submit button to check your work.</li>
+      </ul>
+      
+      <div style="float:right;">
+        <%=link_to_function "Hide", "hideInstructions()"%>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>

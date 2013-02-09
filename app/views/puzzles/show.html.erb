@@ -1,0 +1,60 @@
+<script type="text/javascript">
+  var isIE = false; //(navigator.appName == "Microsoft Internet Explorer");
+  
+  var puzzleID = <%=@puzzle.id%>;  
+  var isAdmin = <%= @me.is_admin?%>;
+  var myUserID = <%=@me.id%>;
+  var guesses = new Guesses();
+  var showComplete = false;
+  var challengeID = 0;
+  var sessionID = 0;
+                                
+  puzzle = new Puzzle(<%=@puzzle.width%>, <%=@puzzle.height%>);
+
+  $(function() {
+    board = new Board($('#grid'), puzzle);
+
+    <% if @initial_pos %>
+      board.jumpTo(<%=@initial_pos[0]%>, <%=@initial_pos[1]%>, 'across');
+    <% else %>
+      board.centerGrid();
+    <% end %>
+    board.reDraw();
+
+  });
+
+</script>
+
+<h1 id="puzzle_title"><%=@puzzle.name%></h1>
+<%= render :partial => 'instructions' %>
+
+<div id='keepalive'></div>
+<div id='puzzle_area'>
+  <input id='inputBox' type='text' onkeydown="keyHandler.handleKeyDown(event);">
+
+  <% if @show_clue_list %>
+    <%= render :partial => 'clue_lists'%>
+  <% end %>
+
+  <div id='clue_and_puzzle'>
+    <div id='clue_area'>
+      <div id='clue_label' class='section_header'>Selected Clue</div>
+      <div id='clue'></div>           
+    </div>
+                      
+    <div id='grid'>
+      Here's the grid
+    </div>                            
+  </div>
+
+  <div id='other'>
+    <%= render :partial => 'score_box' %>
+          
+              <div id="show_instructions" style="<%="display:none;" if @me.show_instructions%>"><%= link_to_function 'Instructions', 'showInstructions();'%></div>
+              </div>
+<div id='puzzle_data' style="display:none;"></div>
+<div id='updater_div' style="display:none;"></div>
+  <div style="clear: both;"></div>
+
+            </div>
+</div>
