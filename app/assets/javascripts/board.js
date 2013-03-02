@@ -135,7 +135,7 @@ Board.prototype =
 		}
      
     var user_color = "";
-    var user_id = this.data.getSolver(absSquare);
+    var user_id = 0; //this.data.getSolver(absSquare);
     if ((user_id) && (typeof(scores) != "undefined")) {
       user_color = "background-color: " + this.userColor(user_id);
     }

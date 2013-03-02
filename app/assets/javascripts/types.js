@@ -1,26 +1,3 @@
-Point = function(x,y)
-{
-	this.x = x;
-	this.y = y;	
-}
-
-Point.prototype = 
-{
-	equals:function(point)
-	{		
-		if ((this.x == point.x) && (this.y == point.y))
-		{
-			return true;
-		}
-		
-		return false;
-	},
-  
-  dup: function()
-  {
-    return new Point(this.x, this.y);
-  }
-}
 
 Direction = function(letter, display, plural, xAdd, yAdd, turns, start)
 {
@@ -161,59 +138,6 @@ function directionFromWord(word)
   return null;
 }
 
-Rules = function(hash)
-{
-	this.hash = hash
-}
-
-Rules.prototype =
-{
-	get:function(name, defult)
-	{
-		if (typeof(this.hash[name]) == "undefined")
-		{
-			return defult;
-		}
-		
-		return this.hash[name];
-	},
-   
-  set:function(name, value)
-  {
-    this.hash[name] = value;
-  },
-  
-  setHash:function(h)
-  {
-    this.hash = h;
-  }
-}
-
-//TODO: remove?
-function showFirstLoginDialog()
-{
-	var html = "<h4>Welcome to The Endless Crossword</h4>";
-	html += "<p>This is a <b>Beta</b>. Please let us know any feedback you have and excuse any problems</p>";
-	html += "<p>The Endless Crossword is a huge crossword puzzle (thousands of clues) that you work on collaboratively (everyone on facebook is working on the same puzzle with you)</p>";
-	html += "<h5>The Controls</h5>";
-	html += "<ul>";
-	html += "<li>Arrow keys - move around the puzzle</li>";
-	html += "<li>Tab - switch direction (across/down)</li>";
-	html += "<li>Drag mouse - move the puzzle around</li>";
-	html += "</ul>";
-	html += "<h5>What do the different color letters mean?</h5>";
-	html += "<ul>";
-	html += "<li>Black - correct letter</li>";
-	html += "<li>Orange - your pending guess (may be right or wrong)</li>";
-	html += "<li>Crossed out - wrong letter that you guessed</li>";
-	html += "</ul>";
-	html += "<p>Have fun and remember to floss.</p>";
-	html += "<input style='margin: 0px 0px 10px 100px;' type='button' value='Start Puzzling' onclick='clueFiller.hideDialog();' class='inputbutton inputaux'/>";
-	
-	document.getElementById('dialog_content').innerHTML = html;
-	
-	clueFiller.showDialog();
-}
 
 function quoteJS(str)
 {
