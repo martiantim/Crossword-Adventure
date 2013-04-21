@@ -15,6 +15,9 @@ class PuzzlesController < ApplicationController
     x2 = params[:x2].to_i
     y2 = params[:y2].to_i
     
+    x2 = 100 if x2 == 0
+    y2 = 100 if y2 == 0
+    
     #TODO: duplicated in puzzle.rb
     x2 = @puzzle.width - 1 if !x2
     y2 = @puzzle.height - 1 if !y2

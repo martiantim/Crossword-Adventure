@@ -1,6 +1,6 @@
 Board = function(el, puzzle, isPrint)
 { 
-	this.SQUARE_SIZE = 31;
+	this.SQUARE_SIZE = 30;
 
   this.element = el;
 	this.data = puzzle;
@@ -13,12 +13,32 @@ Board = function(el, puzzle, isPrint)
   this.currentClue = null;
 	this.allowDirSwitching = true;
   this.isPrint = isPrint;
+  $('#inputBox').keydown(function(event) {
+    return keyHandler.handleKeyDown(event);
+  });
      
   el.onselectstart = function () { return false; }
 	
-	this.width = el.width() / this.SQUARE_SIZE | 0;
-	this.height = el.height() / this.SQUARE_SIZE | 0;
-     
+  el.width($(window).width());
+  el.height($(window).height());
+  
+  $(window).resize(function() {
+    
+  });
+  
+  $('.zoom').click(function() {
+    console.log($(this));
+    if ($(this).hasClass('zoom_in')) {
+      board.setSquareSize(board.SQUARE_SIZE*2);
+      board.reDraw();
+    }
+    if ($(this).hasClass('zoom_out')) {
+      board.setSquareSize(board.SQUARE_SIZE/2);
+      board.reDraw();
+    }
+  });
+  this.setSquareSize(30);
+	     
 	this.dragMgr = new DragHandler(el.attr('id'), mkDelegate(this, this.handleDrag));
 
 	this._reorientTimer = mkDelegate(this, this.reorientBoardTimer);
@@ -27,7 +47,15 @@ Board = function(el, puzzle, isPrint)
 
 Board.prototype = 
 {
-    getHTML:function()
+  setSquareSize: function(size)
+  {
+    this.SQUARE_SIZE = size;
+    
+    this.width = this.element.width() / this.SQUARE_SIZE | 0;
+    this.height = this.element.height() / this.SQUARE_SIZE | 0;
+  },
+
+  getHTML:function()
 	{
 		this.data.grabData(this.xOffset, this.yOffset, this.xOffset + this.width, this.yOffset + this.height);
 		
@@ -56,7 +84,7 @@ Board.prototype =
 				}
 				else if (this.data.isSolid(absSquare))
 				{
-					html += this._getBlockSquareHTML();
+					html += this._getBlockSquareHTML(absSquare);
 				}
 				else
 				{				
@@ -71,10 +99,15 @@ Board.prototype =
 		
 		return html;
 	},
+  
+  _sizeStyle: function()
+  {
+     return "style='width:"+(this.SQUARE_SIZE+1)+"px;height:"+(this.SQUARE_SIZE+1)+"px;'";
+  },
 	
 	_getUnknownSquareHTML:function(absSquare)
 	{
-		var html = "<td class='square' class='" + this._getSquareClass(null, absSquare) + "'>";
+		var html = "<td class='square' class='" + this._getSquareClass(null, absSquare) + "'"+this._sizeStyle()+">";
 		html += "<div class='letter'>?</div>";
 		html += "</td>";
 		
@@ -83,15 +116,9 @@ Board.prototype =
 	
 	_getSquareHTML:function(currentClue, absSquare)
 	{		 
-		var html = "<td id='" + this._getID(absSquare) + "' class='" + this._getSquareClass(currentClue, absSquare) + "'";
-        if (!this.isPrint) html += " onclick='board.handleClick(this, event)'";
+		var html = "<td id='" + this._getID(absSquare) + "' class='" + this._getSquareClass(currentClue, absSquare) + "' "+this._sizeStyle();        
         html += ">";
 
-		if (this.data.isClueStart(absSquare))
-		{
-			//html += "<div class='number'>" + this.data.getClueStartNumber(absSquare) + "</div>";
-		}
-    
     if ((this.currentClue) && (this.currentClue.direction.letter == 'Z') && (this.data.isWithinClue(this.currentClue, absSquare)))
     {
       var offset = this.currentClue.direction.pointToOffset(absSquare);
@@ -139,8 +166,9 @@ Board.prototype =
     if ((user_id) && (typeof(scores) != "undefined")) {
       user_color = "background-color: " + this.userColor(user_id);
     }
-		
-		return "<div style='height: 30px; overflow: hidden;" + user_color + "'><div class='" + clas + "'>" + letter + "</div>" + extra + "</div>";
+		var fontSize = this.SQUARE_SIZE-12;
+    
+		return "<div style='overflow: hidden;" + user_color + "'><div class='" + clas + "' style='font-size:"+fontSize+"px'>" + letter + "</div>" + extra + "</div>";
 	},
    
   userColor:function(user_id)
@@ -161,6 +189,11 @@ Board.prototype =
 		{
 			guessClass = " guess";
 		}
+    
+    if (!this.data.isVisible(absP))
+		{
+			return "square disabled";
+		}
 		
         if (!this.isPrint)
         {
@@ -173,24 +206,18 @@ Board.prototype =
             {
                 return "square currentClue" + guessClass;
             }
-        }
-        
-		if (this.data.isWithinThemeClue(absP))
-		{
-			return "square theme" + guessClass;
-		}
-		
-		if (!this.data.isEnabled(absP))
-		{
-			return "square disabled";
-		}
+        }    						
 		
 		return "square" + guessClass;
 	},
 	
-	_getBlockSquareHTML:function()
+	_getBlockSquareHTML:function(p)
 	{
-		return "<td class='square solid'>&nbsp;</td>";
+    var classes = 'square solid';
+    if (this.data.isValidPosition(p) && (!this.data.isVisible(p))) {
+      classes += " disabled";
+    }
+		return "<td class='"+classes+"' "+this._sizeStyle()+">&nbsp;</td>";
 	},
 	
 	_getID:function(absP)
@@ -200,19 +227,14 @@ Board.prototype =
 	
 	handleClick:function(el, event)
 	{
-		var idparts = el.id.split('x');
-		
+		var idparts = el.attr('id').split('x');
+		    
 		var point = new Point(parseInt(idparts[0]), parseInt(idparts[1])); 
 		board.handleSquareClicked(point);
 	},
 
 	_swapCurrentDirection:function()
 	{
-		if (!this.allowDirSwitching)
-		{
-			return;
-		}
-
     var newDir = this.currentDirection;    
     do {
       var newDir = this._oppositeDirection(newDir);      
@@ -236,7 +258,7 @@ Board.prototype =
 		{			
 			this._swapCurrentDirection();
 		}
-		
+		    
 		if (!this.canPlaceCursor(absP))
 		{
 			var opp = this._oppositeDirection(this.currentDirection);
@@ -264,6 +286,10 @@ Board.prototype =
 
     this.data.scrollToClue(currentClue); //TODO: somewhere else?
 		
+    if (!this.data.isEntireClueVisible(currentClue)) {
+      return "Can't see yet";
+    }
+    
 		return this.data.getClueHTML(currentClue);
 	},
 
@@ -272,29 +298,36 @@ Board.prototype =
 		$('#clue').html(this.getClueHTML());
 	},
 		
-	reDraw:function()
+	reDraw:function(recalcVisible)
 	{
-       
+    var that = this;
+    if (recalcVisible) {
+      this.data.recalculateVisible(this.absSelectedSpot);
+    }
+    
 		var el = $('#grid');
 		if (el)
 		{  		
       el.html(this.getHTML());
+      el.find('td').click(function(event) {
+        that.handleClick($(this), event);
+      });
 		}
-  		
-  		this.reDrawClue();
-  		this.setFocus();
+  	    
+    this.reDrawClue();
+  	this.setFocus();
 	},
 	
 	setFocus:function()
 	{
 		//TODO: move inputbox to middle of puzzle???
 		
-  	    var el = $('inputBox');
+  	  var el = $('#inputBox');     
   		if (el)
   		{
   			el.focus();
   		}
-  		setTimeout("var el = document.getElementById('inputBox'); if (el) { el.focus(); }",1);				
+  		setTimeout("var el = $('#inputBox'); if (el) { el.focus(); }",1);				
 	},
 	
 	handleDrag:function(x1, y1, x2, y2)
@@ -475,20 +508,19 @@ Board.prototype =
 	
 	canPlaceCursor:function(pos, dir)
 	{
-		if (false)
-		{
-			return true;
-		}
-		
 		if (!dir)
 		{
 			dir = this.currentDirection;
 		}
          
-        var clue = this.data.getClue(pos, dir);
-        if (!clue) {
-          return false;
-        }
+    var clue = this.data.getClue(pos, dir);
+    if (!clue) {
+      return false;
+    }
+    if (!this.data.isVisible(pos)) {
+      return false;
+    }
+    
 
 		return this.data.isEnabledWithDirection(pos, dir);
 		
@@ -665,7 +697,7 @@ Board.prototype =
 
 		if (direction)
 		{
-			this.currentDirection = directionFromWord(direction);
+			this.currentDirection = direction;
 		}
 	
 		if (!dontscroll)

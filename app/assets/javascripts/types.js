@@ -1,5 +1,5 @@
 
-Direction = function(letter, display, plural, xAdd, yAdd, turns, start)
+Direction2 = function(letter, display, plural, xAdd, yAdd, turns, start)
 {
   this.letter = letter;
   this.display = display;
@@ -10,7 +10,7 @@ Direction = function(letter, display, plural, xAdd, yAdd, turns, start)
   this.start = start;
 }
 
-Direction.prototype = 
+Direction2.prototype = 
 {
   nextDirection:function(directions)
   {
@@ -88,55 +88,46 @@ Direction.prototype =
   }
 }
 
-ACROSS = new Direction('A', 'across', 'acrosses', 1, 0);
-DOWN = new Direction('D', 'down', 'downs', 0, 1);
-RIGHT_TO_LEFT = new Direction('L', 'right_to_left', '', -1, 0);
-DOWN_TO_UP = new Direction('U', 'down_to_up', '', 0, -1);
-DOWN_RIGHT = new Direction('V', 'down_right', '', 1, 1);
-CRAZY = new Direction('Z', 'crazy', '', 0, 0);
 
-DIRECTIONS = new Array(ACROSS, DOWN_RIGHT, DOWN, RIGHT_TO_LEFT, DOWN_TO_UP, CRAZY);
-DEFAULT_DIRECTION_LETTERS = new Array('A', 'D', 'Z');
+//function directionFromLetter(letter)
+//{
+//  for (var i = 0; i < DIRECTIONS.length; i++) {
+//    var dir = DIRECTIONS[i];
+//    if (letter == dir.letter) {
+//      return dir;
+//    }
+//  }
+//
+//  return null;
+//}
 
-function directionFromLetter(letter)
-{
-  for (var i = 0; i < DIRECTIONS.length; i++) {
-    var dir = DIRECTIONS[i];
-    if (letter == dir.letter) {
-      return dir;
-    }
-  }
+//function directionFromClue(clue)
+//{
+//  var letter = clue.direction;
+//  for (var i = 0; i < DIRECTIONS.length; i++) {
+//    var dir = DIRECTIONS[i];
+//    if (letter == dir.letter) {
+//      if (letter == 'Z') {
+//        return new Direction('Z', 'crazy', '', 0, 0, clue.turns.split(','), clue.point);
+//      }
+//      return dir;
+//    }
+//  }
+//
+//  return null;
+//}
 
-  return null;
-}
-
-function directionFromClue(clue)
-{
-  var letter = clue.direction;
-  for (var i = 0; i < DIRECTIONS.length; i++) {
-    var dir = DIRECTIONS[i];
-    if (letter == dir.letter) {
-      if (letter == 'Z') {
-        return new Direction('Z', 'crazy', '', 0, 0, clue.turns.split(','), clue.point);
-      }
-      return dir;
-    }
-  }
-
-  return null;
-}
-
-function directionFromWord(word)
-{
-  for (var i = 0; i < DIRECTIONS.length; i++) {
-    var dir = DIRECTIONS[i];
-    if (word == dir.display) {
-      return dir;
-    }
-  }
-
-  return null;
-}
+//function directionFromWord(word)
+//{
+//  for (var i = 0; i < DIRECTIONS.length; i++) {
+//    var dir = DIRECTIONS[i];
+//    if (word == dir.display) {
+//      return dir;
+//    }
+//  }
+//
+//  return null;
+//}
 
 
 function quoteJS(str)

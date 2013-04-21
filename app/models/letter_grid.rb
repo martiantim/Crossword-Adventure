@@ -66,6 +66,18 @@ class LetterGrid
     end
   end
   
+  def pattern(clue)
+    word = ""
+    pos = clue.position
+    (clue.length).times do
+      p pos
+      word += self[pos]
+      pos = pos.relative(clue.dir_sym)
+    end
+    
+    word.gsub(/ /, '?')
+  end  
+  
   def dup
     d = LetterGrid.new(@width, @height, [])
     self.each_letter do |letter, x, y|

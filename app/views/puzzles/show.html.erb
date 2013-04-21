@@ -10,8 +10,10 @@
   var sessionID = 0;
                                 
   puzzle = new Puzzle(<%=@puzzle.width%>, <%=@puzzle.height%>);
+  inventory = new Inventory();  
 
   $(function() {
+    
     board = new Board($('#grid'), puzzle);
 
     <% if @initial_pos %>
@@ -25,29 +27,36 @@
 
 </script>
 
-<h1 id="puzzle_title"><%=@puzzle.name%></h1>
-<%= render :partial => 'instructions' %>
-
 <div id='keepalive'></div>
 <div id='puzzle_area'>
-  <input id='inputBox' type='text' onkeydown="keyHandler.handleKeyDown(event);">
+  <input id='inputBox' type='text'>
 
   <% if @show_clue_list %>
     <%= render :partial => 'clue_lists'%>
   <% end %>
 
-  <div id='clue_and_puzzle'>
-    <div id='clue_area'>
+  <div id='clue_and_puzzle'>                          
+    <div id='grid'>
+      
+    </div>
+    
+    <div id="grid_controls" style="position:absolute;left: 10px;top:20px;">
+      <div class="zoom_in zoom">+</div>
+      <div class="zoom_out zoom">-</div>
+    </div>
+    
+    <div id='clue_area' style="position:absolute;left:100px;top:10px;">
       <div id='clue_label' class='section_header'>Selected Clue</div>
       <div id='clue'></div>           
     </div>
-                      
-    <div id='grid'>
-      Here's the grid
-    </div>                            
+    
+    <div id="inventory" style="position:absolute;left:600px;top:10px;background:#fff;width:250px;height:45px;">
+      Items: 
+      <span class="items"></span>
+    </div>
   </div>
 
-  <div id='other'>
+  <div id='other' style="display:none;">
     <%= render :partial => 'score_box' %>
           
               <div id="show_instructions" style="<%="display:none;" if @me.show_instructions%>"><%= link_to_function 'Instructions', 'showInstructions();'%></div>

@@ -230,7 +230,7 @@ Guesses.prototype =
       }
         var params = "challenge_id=" + challengeID;
         if(sessionID) { params += "&s_id=" + sessionID; }
-        new Ajax.Updater('keepalive', '/puzzle/keepalive?' + params, {asynchronous:true, evalScripts:true});
+        //new Ajax.Updater('keepalive', '/puzzle/keepalive?' + params, {asynchronous:true, evalScripts:true});
     },
 
 	getHint:function()
@@ -278,8 +278,8 @@ Guesses.prototype =
 			}
 		}
 		
-		guesses._displayGuesses();
-		board.reDraw();		    
+		guesses._displayGuesses();    
+		board.reDraw(true);		    
     
 		guesses.lastSubmittedGuesses = new Date();
 	},

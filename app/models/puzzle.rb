@@ -1,7 +1,7 @@
 class Puzzle < ActiveRecord::Base
   set_inheritance_column :blah
   
-  attr_accessible :width, :height
+  attr_accessible :width, :height, :name
   
   has_many :clues  
   has_many :wordclues, :through => :clues

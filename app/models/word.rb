@@ -3,6 +3,8 @@ class Word < ActiveRecord::Base
   
   before_save :calculate_difficulties
   
+  attr_accessible :word
+  
   def calculate_difficulties
     min = nil
     max = nil
@@ -19,6 +21,16 @@ class Word < ActiveRecord::Base
     end
     self.min_difficulty = min
     self.max_difficulty = max
+  end
+  
+  def find_easy_clue
+    wordclues.min { |a,b| (a.difficulty || 0) <=> (b.difficulty || 0) }
+  end
+  
+  def self.add(str)
+    w = Word.new(:word => str)
+    w.save!
+    w
   end
   
 end

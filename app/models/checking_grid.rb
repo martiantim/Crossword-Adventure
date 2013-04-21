@@ -87,14 +87,7 @@ class CheckingGrid
   end
   
   def pattern(clue)
-    word = ""
-    pos = clue.position
-    (clue.length).times do
-      word += @cur_grid[pos]
-      pos = pos.relative(clue.dir_sym)
-    end
-    
-    word.gsub(/ /, '?')
+    @cur_grid.pattern(clue)    
   end
   
   def is_letter?(letter)

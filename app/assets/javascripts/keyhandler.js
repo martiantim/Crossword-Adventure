@@ -9,6 +9,7 @@ KeyHandler.prototype =
     handleKeyDown:function(e)
     {
    		this.handleKey(e);
+      return false;
     },
     
     handleKeyPress:function(e)
@@ -62,6 +63,10 @@ KeyHandler.prototype =
 				{
 					board.handleSpace();
 				}
+        if (keychar == "1") {
+          console.log("1!")
+          inventory.use(board.absSelectedSpot);
+        }
 				if ((keychar >= "A") && (keychar <= "Z"))
 				{ 		
 					board.handleLetterTyped(keychar);
