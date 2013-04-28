@@ -1,5 +1,10 @@
 class Point
   constructor: (@x, @y) ->
+    if typeof(@x) == 'string'
+      idparts = @x.split('x');		    
+      @x = parseInt(idparts[0])
+      @y = parseInt(idparts[1])
+
 
   equals: (p) ->
     (@x == p.x) && (@y == p.y)

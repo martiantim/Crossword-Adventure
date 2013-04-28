@@ -20,6 +20,15 @@ class Puzzle < ActiveRecord::Base
     @grid = nil
   end
   
+  def set_answer(x, y, letter)
+    ans = self.answers.detect { |a| a.x == x && a.y == y }
+    if ans
+      ans.update_attribute(:correct, letter)
+    else
+      self.answers.create!(:x => x, :y => y, :correct => letter)
+    end
+  end
+  
   def find_third(srand = 1234, save = false)
     @tree = WordTree.init(1)
     
@@ -194,7 +203,7 @@ class Puzzle < ActiveRecord::Base
     list
   end
   
-  def grid_section(user, x1 = 0, y1 = 0, x2 = nil, y2 = nil)
+  def grid_section(user, x1 = 0, y1 = 0, x2 = nil, y2 = nil, show_answers = false)
     x2 = width - 1 if !x2
     y2 = height - 1 if !y2
     
@@ -206,7 +215,11 @@ class Puzzle < ActiveRecord::Base
     w = x2 - x1 + 1
     h = y2 - y1 + 1
     
-    showgrid = user_grid(user)
+    if show_answers
+      showgrid = letter_grid
+    else
+      showgrid = user_grid(user)
+    end
     
     g = Array.new(w).map!{ Array.new(h) }
     (0..(w-1)).each do |x|

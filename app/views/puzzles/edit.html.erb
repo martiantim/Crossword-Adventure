@@ -1,4 +1,8 @@
 <script type="text/javascript">
+  //TODO list
+  //changing puzzle size
+  
+  
   var isIE = false; //(navigator.appName == "Microsoft Internet Explorer");
   
   var puzzleID = <%=@puzzle.id%>;  
@@ -9,9 +13,10 @@
   var challengeID = 0;
   var sessionID = 0;
                                 
-  puzzle = new Puzzle(<%=@puzzle.id%>,<%=@puzzle.width%>, <%=@puzzle.height%>);
+  puzzle = new Puzzle(<%=@puzzle.id%>, <%=@puzzle.width%>, <%=@puzzle.height%>);
+  puzzle.setShowAnswers(true);
   inventory = new Inventory();  
-  editMode = false;
+  editMode = true;
 
   $(function() {
     
@@ -24,6 +29,12 @@
     <% end %>
     board.reDraw();
 
+    $('button.save').click(function() {
+      var width = $('.controls input[name="width"]').val();
+      var height = $('.controls input[name="height"]').val();
+      puzzle.setSize(width, height);
+      puzzle.save();
+    });    
   });
 
 </script>
@@ -51,9 +62,9 @@
       <div id='clue'></div>           
     </div>
     
-    <div id="inventory" style="position:absolute;left:600px;top:10px;background:#fff;width:250px;height:45px;">
-      Items: 
-      <span class="items"></span>
+    <div class="controls" style="position:absolute;left:600px;top:10px;width:250px;background:#fff;">
+      <button class="save">Save</button>
+      <input type="text" name="width" size="3" value="<%= @puzzle.width %>" style="width:25px"/>x<input type="text" name="height" size="3" value="<%= @puzzle.height %>" style="width:25px"/>
     </div>
   </div>
 

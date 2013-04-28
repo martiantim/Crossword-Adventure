@@ -1,26 +1,41 @@
 class Puzzle
-  constructor: (@width, @height) ->
+  constructor: (@id, @width, @height) ->
     @loading = false
     @clues = new ClueHash
     @data = null
     @specials = []
+    @show_answers = false
 
   getWidth: ->
     @width
     
   getHeight: ->
     @height
+    
+  setShowAnswers: (val) ->
+    @show_answers = val
 
   grabData: (minx, miny, maxx, maxy) ->    
     that = this
     return if @loading
 
     @loading = true
-    $.ajax '/puzzles/'+puzzleID + '/section',
+    $.ajax '/puzzles/'+@id + '/section',
+      data: {show_answers: @show_answers},
       dataType: 'json'      
       success: (data) ->        
         that.onPuzzleLoaded data
 
+  save: ->
+    $.ajax '/puzzles/'+@id + '/save',
+      type: 'POST',
+      data: {grid: @data, width: @width, height: @height},
+      success: (data) ->        
+        alert('Saved!')
+        
+  setSize: (width, height) ->
+    @width = width
+    @height = height
 
   onPuzzleLoaded: (puz) ->        
     that = this
@@ -32,11 +47,17 @@ class Puzzle
     for c in puz.clues
       clue = new Clue(c)
       @clues.add(clue)          
-    @setLetter(new Point(0,7), 'S')
-    @setLetter(new Point(4,8), '*')
-    board.jumpTo(0,7,ACROSS)
-    @specials.push new Special(new Point(0,7), 4, 3, {pos: new Point(4,8), letters: 'SESAME'})
-    @specials.push new Special(new Point(3,7), 1, 1, {item: new Item('torch')})
+      
+    if @id == 1309
+      @setLetter(new Point(0,7), 'S')
+      @setLetter(new Point(4,8), '*')
+      board.jumpTo(0,7,ACROSS)
+      @specials.push new Special(new Point(0,7), 4, 3, {pos: new Point(4,8), letters: 'SESAME'})
+      @specials.push new Special(new Point(3,7), 1, 1, {item: new Item('torch')})
+    else
+      board.jumpTo(0,0,ACROSS)
+    
+      
     board.reDraw(true)
     
   getClue: (p, dir) ->
@@ -52,6 +73,7 @@ class Puzzle
   
   isVisible: (p) ->
     return false if !@data
+    return true if @show_answers
     @data[p.x][p.y].visible
     
   setVisible: (p, val) ->

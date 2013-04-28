@@ -217,7 +217,7 @@ Board.prototype =
     if (this.data.isValidPosition(p) && (!this.data.isVisible(p))) {
       classes += " disabled";
     }
-		return "<td class='"+classes+"' "+this._sizeStyle()+">&nbsp;</td>";
+		return "<td id='"+this._getID(p) + "' class='"+classes+"' "+this._sizeStyle()+">&nbsp;</td>";
 	},
 	
 	_getID:function(absP)
@@ -227,10 +227,12 @@ Board.prototype =
 	
 	handleClick:function(el, event)
 	{
-		var idparts = el.attr('id').split('x');
-		    
+		var idparts = el.attr('id').split('x');		    
 		var point = new Point(parseInt(idparts[0]), parseInt(idparts[1])); 
+    
 		board.handleSquareClicked(point);
+    
+    return false;
 	},
 
 	_swapCurrentDirection:function()
@@ -253,7 +255,7 @@ Board.prototype =
   },
    
 	handleSquareClicked:function(absP)
-	{
+	{    
 		if (this.absSelectedSpot.equals(absP))
 		{			
 			this._swapCurrentDirection();
@@ -312,6 +314,18 @@ Board.prototype =
       el.find('td').click(function(event) {
         that.handleClick($(this), event);
       });
+      if (editMode) {
+        el.find('td').bind("contextmenu",function(e){
+          var p = new Point($(this).attr('id'));
+          if (that.data.getLetter(p) == '*') {
+            that.data.setLetter(p, ' ');
+          } else {
+            that.data.setLetter(p, '*');
+          }
+          that.reDraw();
+          return false;
+        }); 
+      }
 		}
   	    
     this.reDrawClue();

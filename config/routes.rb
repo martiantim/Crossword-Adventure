@@ -35,6 +35,8 @@ Threeword::Application.routes.draw do
     member do     
       get :section
       match :guess
+      get :edit
+      post :save
     end
   end
   
